@@ -123,12 +123,12 @@ def two_layer_net(X, model, y=None, reg=0.0):
   da3[xrange(N), y] -= 1
   da3 /= N
   grads['W2'] = np.dot(a2.T, da3) + reg * W2
-  grads['b2'] = np.sum(da3, axis = 0, keepdims = True)
+  grads['b2'] = np.sum(da3, axis = 0)
 
   da2 = np.dot(da3, W2.T)
   da2[a2 <= 0] = 0
   grads['W1'] = np.dot(X.T, da2) + reg * W1
-  grads['b1'] = np.sum(da2, axis = 0, keepdims = True)
+  grads['b1'] = np.sum(da2, axis = 0  )
   #############################################################################
   #                              END OF YOUR CODE                             #
   #############################################################################
