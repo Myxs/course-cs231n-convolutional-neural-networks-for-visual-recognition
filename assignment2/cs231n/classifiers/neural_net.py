@@ -59,10 +59,10 @@ def two_layer_net(X, model, y=None, reg=0.0):
   - reg: Regularization strength.
 
   Returns:
-  If y not is passed, return a matrix scores of shape (N, C) where scores[i, c]
+  If y is not passed, return a matrix scores of shape (N, C) where scores[i, c]
   is the score for class c on input X[i].
 
-  If y is not passed, instead return a tuple of:
+  If y is passed, instead return a tuple of:
   - loss: Loss (data loss and regularization loss) for this batch of training
     samples.
   - grads: Dictionary mapping parameter names to gradients of those parameters
@@ -80,7 +80,10 @@ def two_layer_net(X, model, y=None, reg=0.0):
   # Store the result in the scores variable, which should be an array of      #
   # shape (N, C).                                                             #
   #############################################################################
-  pass
+  a1 = X.dot(W1) + b1
+  a2 = np.maximum(a1, 0)
+  a3 = a2.dot(W2) + b2
+  scores = a3
   #############################################################################
   #                              END OF YOUR CODE                             #
   #############################################################################
@@ -98,7 +101,13 @@ def two_layer_net(X, model, y=None, reg=0.0):
   # classifier loss. So that your results match ours, multiply the            #
   # regularization loss by 0.5                                                #
   #############################################################################
-  pass
+  scores = scores - np.max(scores, axis = 1)
+  exp_scores = np.exp(scores)
+  probs = exp_scores / np.sum(exp_scores, axis = 1, keepdims = True)
+  correct_log_probs = -np.log(probs[xrange(N), y])
+  data_loss = np.sum(correct_log_probs) / N
+  reg_loss = 0.5 * reg * (np.sum(W1 * W1) + np.sum(W2 * W2))
+  loss = data_loss + reg_loss
   #############################################################################
   #                              END OF YOUR CODE                             #
   #############################################################################
@@ -110,7 +119,16 @@ def two_layer_net(X, model, y=None, reg=0.0):
   # and biases. Store the results in the grads dictionary. For example,       #
   # grads['W1'] should store the gradient on W1, and be a matrix of same size #
   #############################################################################
-  pass
+  da3 = probs
+  da3[xrange(N), y] -= 1
+  da3 /= N
+  grads['W2'] = np.dot(a2.T, da3) + reg * W2
+  grads['b2'] = np.sum(da3, axis = 0, keepdims = True)
+
+  da2 = np.dot(da3, W2.T)
+  da2[a2 <= 0] = 0
+  grads['W1'] = np.dot(X.T, da2) + reg * W1
+  grads['b1'] = np.sum(da2, axis = 0, keepdims = True)
   #############################################################################
   #                              END OF YOUR CODE                             #
   #############################################################################
