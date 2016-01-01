@@ -101,7 +101,7 @@ def two_layer_net(X, model, y=None, reg=0.0):
   # classifier loss. So that your results match ours, multiply the            #
   # regularization loss by 0.5                                                #
   #############################################################################
-  scores = scores - np.max(scores, axis = 1)
+  scores = scores - np.max(scores, axis = 1).reshape(scores.shape[0], 1)
   exp_scores = np.exp(scores)
   probs = exp_scores / np.sum(exp_scores, axis = 1, keepdims = True)
   correct_log_probs = -np.log(probs[xrange(N), y])
