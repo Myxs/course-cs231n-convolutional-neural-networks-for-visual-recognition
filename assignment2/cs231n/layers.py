@@ -231,7 +231,25 @@ def max_pool_forward_naive(x, pool_param):
   #############################################################################
   # TODO: Implement the max pooling forward pass                              #
   #############################################################################
-  pass
+  N, C, H, W = x.shape
+  HH = pool_param.get('pool_height')
+  WW = pool_param.get('pool_width')
+  stride = pool_param.get('stride')
+  H_OUT = (H - HH) / stride + 1
+  W_OUT = (W - WW) / stride + 1
+
+  out = np.zeros((N, C, H_OUT, W_OUT))
+  for n in xrange(N):
+    for c in xrange(C):
+      mat = x[n, c, :, :]
+      for ri in xrange(H_OUT):
+        start_row = ri * stride
+        end_row = ri * stride + HH
+        for ci in xrange(W_OUT):
+          start_col = ci * stride
+          end_col = ci * stride + WW
+          window = mat[start_row : end_row, start_col : end_col]
+          out[n, c, ri, ci] = np.max(window)
   #############################################################################
   #                             END OF YOUR CODE                              #
   #############################################################################
@@ -254,7 +272,28 @@ def max_pool_backward_naive(dout, cache):
   #############################################################################
   # TODO: Implement the max pooling backward pass                             #
   #############################################################################
-  pass
+  x, pool_param = cache
+  N, C, H, W = x.shape
+  HH = pool_param.get('pool_height')
+  WW = pool_param.get('pool_width')
+  stride = pool_param.get('stride')
+  _, _, H_OUT, W_OUT = dout.shape
+
+  dx = np.zeros(x.shape)
+  for n in xrange(N):
+    for c in xrange(C):
+      mat = x[n, c, :, :]
+      for ri in xrange(H_OUT):
+        start_row = ri * stride
+        end_row = ri * stride + HH
+        for ci in xrange(W_OUT):
+          start_col = ci * stride
+          end_col = ci * stride + WW
+          window = mat[start_row : end_row, start_col : end_col]
+          pos = np.argmax(window)
+          mr = start_row + pos / WW
+          mc = start_col + pos % WW
+          dx[n, c, mr, mc] = dout[n, c, ri, ci]
   #############################################################################
   #                             END OF YOUR CODE                              #
   #############################################################################
