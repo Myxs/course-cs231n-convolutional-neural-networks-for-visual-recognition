@@ -364,10 +364,10 @@ def five_layer_convnet(X, model, y=None, reg=0.0, dropout=1.0,
     # TODO: Return features extracted from X.                                 #
     # HINT: This should be VERY simple!                                       #
     ###########################################################################
+    return a4
     ###########################################################################
     #                         END OF YOUR CODE                                #  
     ###########################################################################
-    raise NotImplementedError()
   d4, cache5 = dropout_forward(a4, dropout_param)
   scores, cache6 = affine_forward(d4, W5, b5)
 
